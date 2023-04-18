@@ -22,6 +22,7 @@ bootloader.bin : %.bin : %.o
 bootloader.o : %.o : %.S
 	as --32 $< -o $@
 
+#abc
 
 .PHONY: clean
 
