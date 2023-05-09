@@ -1,0 +1,45 @@
+#!/bin/bash
+
+FILEPATH=$1
+
+USAGE="newfile <filename>"
+
+
+if test -z "$FILEPATH"; then
+    echo $USAGE
+    exit 1
+fi
+
+
+BASENAME=$(basename "$FILEPATH")
+ORIGIN=$(dirname "$0")
+
+# Args: template
+
+function create()
+{
+    cat $ORIGIN/$1 |
+	sed  "s/<file>/$BASENAME/" |
+	sed "s/<oneline>/$2/" > $FILEPATH    
+}
+
+case $BASENAME in
+    *.c )
+	create "newfile.c" "C source file."
+	;;
+    *.h)
+	create "newfile.c" "C header file."
+	;;
+    Makefile | makefile | *.mk)
+	create "newfile.Makefile" "Make script."
+	;;
+    Makefile.m4)
+	create "newfile.Makefile.m4" "Make script"
+	;;
+    README.m4)
+	create "newfile.README.m4" 
+	;;
+    *)
+	cp $FILEPATH $OUTPUT/$FULLNAME
+	;;
+esac

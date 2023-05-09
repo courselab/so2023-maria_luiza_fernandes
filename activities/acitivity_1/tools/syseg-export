@@ -1,0 +1,100 @@
+#!/bin/bash
+#
+# export - Export a file from SYSeg
+#
+#
+#  Copyright (c) 2021, Monaco F. J. <monaco@usp.br>
+#
+#  This file is part of SYSeg.
+#
+#  SYSeg is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#   
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#   
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+## ABOUT THIS PROGRAM
+##
+## Should you wish to reuse some SYSeg code in your own project, you are
+## naturally welcome to do so under the terms of SYSeg free software license.
+##
+## Just remember that, if you modify the borrowed SYSeg code, you should
+## add a note informing that your code is a derivative work. To that end,
+## we ask you to modify the statament in the comments at the begining of
+## the referred source files, claiming the authorship and copyright, and
+## also adding an attribution note to SYSeg author(s).
+##
+## To make this procedure easy, please use this script to export files
+## from SYSeg to your own project. It will replace the original copyright
+## statement with a customizable version, which you should then edit to
+## fill-in your own data.
+##
+## Usage: syseg-export <input-file> <output-directory>
+
+FILEPATH=$1
+OUTDIR=$2
+
+USAGE="syseg-export <input-file> [<output-directory>]"
+
+if test -z "$FILEPATH"; then
+    echo $USAGE
+    exit 1
+fi
+
+
+FULLNAME=$(basename "$FILEPATH")
+NAME="${FULLNAME%.[^.]*}"
+EXTENSION="${FULLNAME:${#NAME} + 1}" 
+
+if test -z "$OUTDIR"; then
+    OUTPUT=/dev/stdout
+else
+    OUTPUT="$OUTDIR/$FULLNAME"
+    mkdir -p "$OUTDIR"
+fi
+
+#echo "$FULLNAME : ($NAME) . ($EXTENSION)"
+
+# if test -z "$EXTENSION"; then
+#     echo "Error: $FULLNAME has not extension."
+#     exit 1
+# fi
+
+ORIGIN=$(dirname "$0")
+
+## Filter by extension
+
+
+case $FULLNAME in
+    *.c | *.h)
+	cat $ORIGIN/export.c > $OUTPUT
+	$ORIGIN/stripcomment -c $FILEPATH >> $OUTPUT
+	;;
+    *.S)
+	cat $ORIGIN/export.S > $OUTPUT
+	$ORIGIN/stripcomment -h $FILEPATH >> $OUTPUT
+	;;
+    Makefile | makefile | *.mk )
+	cat $ORIGIN/export.Makefile > $OUTPUT
+	$ORIGIN/stripcomment -h $FILEPATH >> $OUTPUT
+	;;
+    Makefile.am)
+	cat $ORIGIN/export.am > $OUTPUT
+	$ORIGIN/stripcomment -h $FILEPATH >> $OUTPUT
+	;;
+    configure.ac)
+	cat $ORIGIN/export.ac > $OUTPUT
+	$ORIGIN/stripcomment -m $FILEPATH >> $OUTPUT
+	;;
+    *)
+	cp $FILEPATH $OUTPUT
+	;;
+esac
+
