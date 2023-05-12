@@ -16,4 +16,4 @@ SECTIONS
     __END_STACK__ = 0x7e00 + 0x200;    
 }
 STARTUP(hw_rt0.o);
-INPUT(hw_utils.o)
+INPUT(hw_utils.o);
